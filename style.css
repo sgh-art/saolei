@@ -1,0 +1,268 @@
+* {
+    box-sizing: border-box;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(145deg, #2c3e50, #34495e);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 10px;
+}
+
+.game-container {
+    background: #b0c2d0;
+    padding: 20px;
+    border-radius: 30px;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+}
+
+.status-panel {
+    background: #c0d0de;
+    border-radius: 40px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: inset -2px -2px 5px #7d8c9c, inset 2px 2px 5px #ecf4ff;
+}
+
+.mine-counter {
+    background: #1e2b38;
+    color: #ff4757;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 2rem;
+    padding: 5px 15px;
+    border-radius: 20px;
+    text-shadow: 0 0 8px #ff6b81;
+    letter-spacing: 2px;
+    box-shadow: inset 0 0 5px #00000055;
+}
+
+.face-button {
+    background: #d9e2ec;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #6b7b8b, 0 8px 10px #2f3b44;
+    transition: 0.08s linear;
+    border: none;
+}
+
+.face-button:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 #5a6978, 0 5px 8px #2f3b44;
+}
+
+.difficulty {
+    display: flex;
+    gap: 8px;
+}
+
+.difficulty button {
+    background: #b9ccdd;
+    border: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 6px 15px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: inset -2px -2px 4px #6f808f, inset 2px 2px 5px #f0f8ff, 0 4px 0 #5a6a7a;
+    transition: 0.06s linear;
+    color: #1e2f3f;
+}
+
+.difficulty button:active {
+    transform: translateY(4px);
+    box-shadow: inset -2px -2px 4px #6f808f, inset 2px 2px 5px #f0f8ff;
+}
+
+/* 模式切换面板 */
+.mode-panel {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.mode-btn {
+    background: #b9ccdd;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 10px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #1e2f3f;
+}
+
+.mode-btn.active {
+    background: #ffa502;
+    color: white;
+    box-shadow: 0 0 10px rgba(255,165,0,0.5);
+}
+
+/* 双人模式玩家面板 */
+.players-panel {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.player-card {
+    background: #c0d0de;
+    border-radius: 20px;
+    padding: 15px 25px;
+    text-align: center;
+    flex: 1;
+    transition: 0.2s;
+}
+
+.player1-card {
+    border-left: 5px solid #ff4757;
+}
+
+.player2-card {
+    border-left: 5px solid #1e90ff;
+}
+
+.player-card.active-turn {
+    background: #ffd966;
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.player-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.player-controls {
+    font-size: 0.8rem;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.player-controls kbd {
+    background: #2c3e50;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+}
+
+.player-score {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.player-turn {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #e67e22;
+}
+
+.board-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.board {
+    display: grid;
+    background: #8d9eae;
+    padding: 12px;
+    border-radius: 30px;
+    box-shadow: inset -3px -3px 8px #5c6b7b, inset 3px 3px 8px #c7d9ea;
+    gap: 2px;
+    position: relative;
+}
+
+.cell {
+    width: 34px;
+    height: 34px;
+    background: #b7c7d7;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    box-shadow: inset -3px -3px 5px #6c7e8e, inset 3px 3px 5px #e6f0fa;
+    cursor: pointer;
+    color: #1a334c;
+    position: relative;
+}
+
+.cell.revealed {
+    background: #cedff0;
+    box-shadow: inset 0 0 0 1px #b3c6d8, inset 3px 3px 6px #9aabbc;
+    color: #1d3a5c;
+}
+
+.cell.flagged::before {
+    content: "⚑";
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #d13f4b;
+    text-shadow: 0 2px 3px #77001e;
+}
+
+.mine-icon::after {
+    content: "💣";
+    font-size: 1.2rem;
+}
+
+.exploded {
+    background: #ffb8b8 !important;
+}
+
+/* 光标样式 */
+.cell.cursor {
+    box-shadow: 0 0 0 3px #ffa502, 0 0 0 6px rgba(255,165,2,0.3);
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.win-message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #ffe66d;
+    text-shadow: 2px 2px 0 #2f414f;
+    min-height: 2.5rem;
+}
+
+.double-tip {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #ecf0f1;
+    background: #34495e;
+    padding: 8px;
+    border-radius: 20px;
+}
+
+.double-tip kbd {
+    background: #2c3e50;
+    color: #ffa502;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-weight: bold;
+}
