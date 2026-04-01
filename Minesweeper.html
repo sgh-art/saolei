@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>扫雷 · 双人对战版</title>
+    <title>扫雷 · 三人对战版</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,25 +19,35 @@
         </div>
     </div>
 
-    <!-- 模式切换 -->
+    <!-- ========== 模式切换面板（约第16-22行） ========== -->
     <div class="mode-panel">
         <button id="singleModeBtn" class="mode-btn active">🎮 单人模式</button>
         <button id="doubleModeBtn" class="mode-btn">👥 双人对战</button>
+        <button id="tripleModeBtn" class="mode-btn">👥👤 三人对战</button>   <!-- 新增三人模式按钮 -->
     </div>
 
-    <!-- 双人模式玩家信息 -->
+    <!-- 双人/三人模式玩家信息面板 -->
     <div class="players-panel" id="playersPanel" style="display: none;">
+        <!-- 红方玩家 -->
         <div class="player-card player1-card" id="player1Card">
             <div class="player-name">🔴 红方玩家</div>
-            <div class="player-controls">按键: <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>W</kbd> 控制方向</div>
+            <div class="player-controls">按键: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 移动，<kbd>空格</kbd> 翻开</div>
             <div class="player-score" id="player1Score">得分: 0</div>
             <div class="player-turn" id="player1Turn">👑 当前回合</div>
         </div>
+        <!-- 蓝方玩家 -->
         <div class="player-card player2-card" id="player2Card">
             <div class="player-name">🔵 蓝方玩家</div>
-            <div class="player-controls">按键: <kbd>←</kbd> <kbd>↓</kbd> <kbd>→</kbd> <kbd>↑</kbd> 控制方向</div>
+            <div class="player-controls">按键: <kbd>←</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>→</kbd> 移动，<kbd>空格</kbd> 翻开</div>
             <div class="player-score" id="player2Score">得分: 0</div>
             <div class="player-turn" id="player2Turn">⏳ 等待中</div>
+        </div>
+        <!-- 绿方玩家（三人模式专用） -->
+        <div class="player-card player3-card" id="player3Card" style="display: none;">
+            <div class="player-name">🟢 绿方玩家</div>
+            <div class="player-controls">操作: <kbd>鼠标点击</kbd> 翻开格子</div>
+            <div class="player-score" id="player3Score">得分: 0</div>
+            <div class="player-turn" id="player3Turn">⏳ 等待中</div>
         </div>
     </div>
 
@@ -49,9 +59,14 @@
     <!-- 消息提示 -->
     <div class="win-message" id="messageArea"></div>
 
-    <!-- 双人模式提示 -->
+    <!-- 双人/三人模式提示 -->
     <div class="double-tip" id="doubleTip" style="display: none;">
-        💡 提示: 轮到你了，用方向键/字母键控制光标，按 <kbd>空格</kbd> 翻开格子！
+        💡 提示
+    </div>
+
+    <!-- 音频控制面板（可选） -->
+    <div class="audio-controls" id="audioControls">
+        <button id="toggleSfxBtn" class="audio-btn">🔊 音效</button>
     </div>
 </div>
 
