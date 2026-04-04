@@ -89,7 +89,6 @@ body {
     box-shadow: inset -2px -2px 4px #6f808f, inset 2px 2px 5px #f0f8ff;
 }
 
-/* 模式切换面板 */
 .mode-panel {
     display: flex;
     gap: 15px;
@@ -115,7 +114,6 @@ body {
     box-shadow: 0 0 10px rgba(255,165,0,0.5);
 }
 
-/* 双人模式玩家面板 */
 .players-panel {
     display: flex;
     gap: 20px;
@@ -138,6 +136,10 @@ body {
 
 .player2-card {
     border-left: 5px solid #1e90ff;
+}
+
+.player3-card {
+    border-left: 5px solid #2ecc71;
 }
 
 .player-card.active-turn {
@@ -232,7 +234,6 @@ body {
     background: #ffb8b8 !important;
 }
 
-/* 光标样式 */
 .cell.cursor {
     box-shadow: 0 0 0 3px #ffa502, 0 0 0 6px rgba(255,165,2,0.3);
     transform: scale(1.02);
@@ -265,4 +266,59 @@ body {
     padding: 2px 8px;
     border-radius: 5px;
     font-weight: bold;
+}
+
+.audio-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+    background: rgba(0,0,0,0.6);
+    padding: 8px 15px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+}
+
+.audio-btn {
+    background: #34495e;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    font-weight: bold;
+}
+
+.audio-btn:hover {
+    background: #ffa502;
+    transform: scale(1.05);
+}
+
+.audio-btn.muted {
+    background: #7f8c8d;
+    opacity: 0.7;
+}
+
+/* ========== 连击动画 ========== */
+@keyframes comboPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.combo-toast {
+    animation: comboPop 0.5s ease-out !important;
+    pointer-events: none;
 }
