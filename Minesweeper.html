@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>扫雷 · 三人对战版</title>
+    <title>扫雷 · 多人对战版</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,30 +19,27 @@
         </div>
     </div>
 
-    <!-- ========== 模式切换面板（约第16-22行） ========== -->
+    <!-- 模式切换面板 -->
     <div class="mode-panel">
         <button id="singleModeBtn" class="mode-btn active">🎮 单人模式</button>
         <button id="doubleModeBtn" class="mode-btn">👥 双人对战</button>
         <button id="tripleModeBtn" class="mode-btn">👥👤 三人对战</button>
     </div>
 
-    <!-- 双人/三人模式玩家信息面板 -->
+    <!-- 玩家信息面板 -->
     <div class="players-panel" id="playersPanel" style="display: none;">
-        <!-- 红方玩家 -->
         <div class="player-card player1-card" id="player1Card">
             <div class="player-name">🔴 红方玩家</div>
             <div class="player-controls">按键: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 移动，<kbd>空格</kbd> 翻开</div>
             <div class="player-score" id="player1Score">得分: 0</div>
             <div class="player-turn" id="player1Turn">👑 当前回合</div>
         </div>
-        <!-- 蓝方玩家 -->
         <div class="player-card player2-card" id="player2Card">
             <div class="player-name">🔵 蓝方玩家</div>
             <div class="player-controls">按键: <kbd>←</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>→</kbd> 移动，<kbd>空格</kbd> 翻开</div>
             <div class="player-score" id="player2Score">得分: 0</div>
             <div class="player-turn" id="player2Turn">⏳ 等待中</div>
         </div>
-        <!-- 绿方玩家（三人模式专用） -->
         <div class="player-card player3-card" id="player3Card" style="display: none;">
             <div class="player-name">🟢 绿方玩家</div>
             <div class="player-controls">操作: <kbd>鼠标点击</kbd> 翻开格子</div>
@@ -59,16 +56,34 @@
     <!-- 消息提示 -->
     <div class="win-message" id="messageArea"></div>
 
-    <!-- 双人/三人模式提示 -->
+    <!-- 游戏提示 -->
     <div class="double-tip" id="doubleTip" style="display: none;">
         💡 提示
     </div>
 
-    <!-- 音频控制面板（可选） -->
-    <div class="audio-controls" id="audioControls">
-        <button id="toggleSfxBtn" class="audio-btn">🔊 音效</button>
+    <!-- 音频控制面板 -->
+    <div class="audio-control-panel">
+        <button id="toggleBgmBtn" class="audio-control-btn">🎵 背景音乐</button>
+        <button id="toggleSfxBtn" class="audio-control-btn">🔊 音效</button>
     </div>
 </div>
+
+<!-- 音频元素 -->
+<audio id="bgmAudio" loop preload="auto" style="display:none;">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+<audio id="clickAudio" preload="auto" style="display:none;">
+    <source src="https://www.soundjay.com/misc/sounds/click-01.mp3" type="audio/mpeg">
+</audio>
+<audio id="explodeAudio" preload="auto" style="display:none;">
+    <source src="https://www.myinstants.com/media/sounds/explosion.mp3" type="audio/mpeg">
+</audio>
+<audio id="winAudio" preload="auto" style="display:none;">
+    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+</audio>
+<audio id="comboAudio" preload="auto" style="display:none;">
+    <source src="https://www.soundjay.com/misc/sounds/cheering-01.mp3" type="audio/mpeg">
+</audio>
 
 <script src="game.js"></script>
 </body>

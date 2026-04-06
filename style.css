@@ -130,17 +130,9 @@ body {
     transition: 0.2s;
 }
 
-.player1-card {
-    border-left: 5px solid #ff4757;
-}
-
-.player2-card {
-    border-left: 5px solid #1e90ff;
-}
-
-.player3-card {
-    border-left: 5px solid #2ecc71;
-}
+.player1-card { border-left: 5px solid #ff4757; }
+.player2-card { border-left: 5px solid #1e90ff; }
+.player3-card { border-left: 5px solid #2ecc71; }
 
 .player-card.active-turn {
     background: #ffd966;
@@ -192,7 +184,6 @@ body {
     border-radius: 30px;
     box-shadow: inset -3px -3px 8px #5c6b7b, inset 3px 3px 8px #c7d9ea;
     gap: 2px;
-    position: relative;
 }
 
 .cell {
@@ -208,7 +199,6 @@ body {
     box-shadow: inset -3px -3px 5px #6c7e8e, inset 3px 3px 5px #e6f0fa;
     cursor: pointer;
     color: #1a334c;
-    position: relative;
 }
 
 .cell.revealed {
@@ -260,28 +250,20 @@ body {
     border-radius: 20px;
 }
 
-.double-tip kbd {
-    background: #2c3e50;
-    color: #ffa502;
-    padding: 2px 8px;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.audio-controls {
+.audio-control-panel {
     position: fixed;
     bottom: 20px;
     right: 20px;
     display: flex;
     gap: 10px;
     z-index: 1000;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.7);
     padding: 8px 15px;
     border-radius: 50px;
     backdrop-filter: blur(5px);
 }
 
-.audio-btn {
+.audio-control-btn {
     background: #34495e;
     border: none;
     color: white;
@@ -293,29 +275,20 @@ body {
     font-weight: bold;
 }
 
-.audio-btn:hover {
+.audio-control-btn:hover {
     background: #ffa502;
     transform: scale(1.05);
 }
 
-.audio-btn.muted {
+.audio-control-btn.muted {
     background: #7f8c8d;
     opacity: 0.7;
 }
 
-/* ========== 连击动画 ========== */
 @keyframes comboPop {
-    0% {
-        transform: translate(-50%, -50%) scale(0.5);
-        opacity: 0;
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1.2);
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
 .combo-toast {
