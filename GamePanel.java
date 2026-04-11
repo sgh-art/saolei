@@ -1,8 +1,6 @@
 package com.minesweeper.core;
 
 import com.minesweeper.entity.Cell;
-import com.minesweeper.mode.GameModeController;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,208 +9,135 @@ import java.util.function.BiConsumer;
 
 public class GamePanel extends JPanel {
     private GameLogic logic;
-    private GameModeController modeController;
-    private BiConsumer<Integer, Integer> onCellLeftClick;
-    private BiConsumer<Integer, Integer> onCellRightClick;
-
+    private BiConsumer<Integer, Integer> onLeftClick;
+    private BiConsumer<Integer, Integer> onRightClick;
     private int cellSize = GameConfig.CELL_SIZE;
     private int padding = GameConfig.BOARD_PADDING;
-
-    private int cursorRow = -1;
-    private int cursorCol = -1;
+    private int cursorRow = -1, cursorCol = -1;
 
     public GamePanel(GameLogic logic) {
         this.logic = logic;
         setBackground(new Color(0x8D9EAE));
-        setPreferredSize(new Dimension(
-                logic.getCols() * cellSize + padding * 2,
-                logic.getRows() * cellSize + padding * 2
-        ));
+        updateSize();
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                Point p = e.getPoint();
-                int col = (p.x - padding) / cellSize;
-                int row = (p.y - padding) / cellSize;
-                if (row < 0 || row >= logic.getRows() || col < 0 || col >= logic.getCols()) return;
-
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (onCellLeftClick != null) {
-                        onCellLeftClick.accept(row, col);
-                    }
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    if (onCellRightClick != null) {
-                        onCellRightClick.accept(row, col);
-                    }
+                // 每次点击都使用当前最新的 logic
+                GameLogic currentLogic = GamePanel.this.logic;
+                if (currentLogic == null) return;
+                int row = (e.getY() - padding) / cellSize;
+                int col = (e.getX() - padding) / cellSize;
+                if (row < 0 || row >= currentLogic.getRows() || col < 0 || col >= currentLogic.getCols()) {
+                    return; // 严格边界检查
                 }
-                repaint(); // 确保点击后立即重绘
+                if (SwingUtilities.isLeftMouseButton(e) && onLeftClick != null) {
+                    onLeftClick.accept(row, col);
+                } else if (SwingUtilities.isRightMouseButton(e) && onRightClick != null) {
+                    onRightClick.accept(row, col);
+                }
+                repaint();
             }
         });
         setFocusable(true);
     }
 
-    public GameLogic getLogic() {
-        return logic;
-    }
-
     public void setLogic(GameLogic logic) {
         this.logic = logic;
-        updateBoardSize();
+        updateSize();      // 重新计算首选尺寸
+        revalidate();      // 通知布局管理器
+        repaint();         // 立即重绘
     }
 
-    public void setModeController(GameModeController controller) {
-        this.modeController = controller;
-    }
+    public void setOnLeftClick(BiConsumer<Integer, Integer> h) { onLeftClick = h; }
+    public void setOnRightClick(BiConsumer<Integer, Integer> h) { onRightClick = h; }
+    public void setCursor(int r, int c) { cursorRow = r; cursorCol = c; repaint(); }
+    public void clearCursor() { cursorRow = cursorCol = -1; repaint(); }
 
-    public void setOnCellLeftClick(BiConsumer<Integer, Integer> handler) {
-        this.onCellLeftClick = handler;
-    }
-
-    public void setOnCellRightClick(BiConsumer<Integer, Integer> handler) {
-        this.onCellRightClick = handler;
-    }
-
-    public void setCursorPosition(int row, int col) {
-        this.cursorRow = row;
-        this.cursorCol = col;
-        repaint();
-    }
-
-    public void clearCursor() {
-        this.cursorRow = -1;
-        this.cursorCol = -1;
-        repaint();
+    private void updateSize() {
+        if (logic != null) {
+            setPreferredSize(new Dimension(
+                    logic.getCols() * cellSize + padding * 2,
+                    logic.getRows() * cellSize + padding * 2
+            ));
+        }
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (logic == null) return;
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        int rows = logic.getRows();
-        int cols = logic.getCols();
-
-        // 绘制棋盘背景（深色凹陷感）
         g2.setColor(new Color(0x7A8B9B));
-        g2.fillRoundRect(padding - 2, padding - 2, cols * cellSize + 4, rows * cellSize + 4, 20, 20);
+        g2.fillRoundRect(padding-2, padding-2, logic.getCols()*cellSize+4, logic.getRows()*cellSize+4, 20, 20);
 
-        // 绘制所有格子
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+        for (int r = 0; r < logic.getRows(); r++) {
+            for (int c = 0; c < logic.getCols(); c++) {
                 int x = padding + c * cellSize;
                 int y = padding + r * cellSize;
-                drawCell(g2, r, c, x, y);
+                drawCell(g2, logic.getCell(r, c), x, y);
             }
         }
 
-        // 绘制光标（多人模式）
-        if (cursorRow >= 0 && cursorRow < rows && cursorCol >= 0 && cursorCol < cols) {
+        if (cursorRow >= 0 && cursorRow < logic.getRows() && cursorCol >= 0 && cursorCol < logic.getCols()) {
             int x = padding + cursorCol * cellSize;
             int y = padding + cursorRow * cellSize;
-            g2.setColor(new Color(255, 215, 0, 180));
+            g2.setColor(new Color(255, 215, 0, 150));
             g2.setStroke(new BasicStroke(3));
-            g2.drawRoundRect(x + 2, y + 2, cellSize - 4, cellSize - 4, 6, 6);
-            g2.setColor(new Color(255, 215, 0, 80));
-            g2.setStroke(new BasicStroke(6));
-            g2.drawRoundRect(x - 2, y - 2, cellSize + 4, cellSize + 4, 10, 10);
+            g2.drawRoundRect(x+2, y+2, cellSize-4, cellSize-4, 6, 6);
         }
     }
 
-    private void drawCell(Graphics2D g2, int r, int c, int x, int y) {
-        Cell cell = logic.getCell(r, c);
+    private void drawCell(Graphics2D g2, Cell cell, int x, int y) {
         boolean revealed = cell.isRevealed();
         boolean flagged = cell.isFlagged();
         boolean mine = cell.isMine();
-        boolean exploded = cell.isExploded();
 
-        // 背景色：未翻开（深色），已翻开（亮色）—— 对比度极大提升
         if (!revealed) {
-            // 未翻开：金属灰蓝色
             g2.setColor(new Color(0x9AACBD));
             g2.fillRoundRect(x, y, cellSize, cellSize, 6, 6);
-            // 立体阴影效果
-            g2.setColor(new Color(0x6C7E8E));
-            g2.drawLine(x + 2, y + cellSize - 3, x + cellSize - 3, y + cellSize - 3);
-            g2.drawLine(x + cellSize - 3, y + 2, x + cellSize - 3, y + cellSize - 3);
             g2.setColor(new Color(0xE6F0FA));
-            g2.drawLine(x + 2, y + 2, x + cellSize - 3, y + 2);
-            g2.drawLine(x + 2, y + 2, x + 2, y + cellSize - 3);
+            g2.drawLine(x+2, y+2, x+cellSize-3, y+2);
+            g2.drawLine(x+2, y+2, x+2, y+cellSize-3);
+            g2.setColor(new Color(0x6C7E8E));
+            g2.drawLine(x+2, y+cellSize-3, x+cellSize-3, y+cellSize-3);
+            g2.drawLine(x+cellSize-3, y+2, x+cellSize-3, y+cellSize-3);
         } else {
-            // 已翻开：明亮的米白色，与未翻开形成鲜明对比
-            g2.setColor(new Color(0xF5F8FC));
+            g2.setColor(new Color(0xF0F5FA));
             g2.fillRoundRect(x, y, cellSize, cellSize, 6, 6);
-            // 凹陷内边框
             g2.setColor(new Color(0xB0C0D0));
             g2.drawRoundRect(x, y, cellSize, cellSize, 6, 6);
         }
 
-        // 爆炸特效（覆盖背景）
-        if (exploded) {
-            g2.setColor(new Color(0xFF6B6B));
-            g2.fillRoundRect(x, y, cellSize, cellSize, 6, 6);
-        }
-
-        // 绘制旗子（未翻开时）
         if (!revealed && flagged) {
-            g2.setColor(new Color(0xD32F2F));
+            g2.setColor(Color.RED);
             g2.setFont(new Font("Segoe UI Emoji", Font.BOLD, 24));
-            g2.drawString("⚑", x + 5, y + 28);
+            g2.drawString("⚑", x+5, y+27);
         }
 
-        // 绘制内容（已翻开）
         if (revealed) {
             if (mine) {
-                // 地雷：显眼的黑色炸弹
                 g2.setColor(Color.BLACK);
-                g2.fillOval(x + 6, y + 6, 22, 22);
-                g2.setColor(new Color(0x333333));
-                g2.fillOval(x + 9, y + 9, 16, 16);
+                g2.fillOval(x+6, y+6, 22, 22);
                 g2.setColor(Color.RED);
-                g2.setFont(new Font("Segoe UI Emoji", Font.BOLD, 22));
-                g2.drawString("💣", x + 5, y + 28);
+                g2.setFont(new Font("Segoe UI Emoji", Font.BOLD, 20));
+                g2.drawString("💣", x+5, y+27);
             } else {
-                int neighbor = cell.getNeighborMines();
-                if (neighbor > 0) {
-                    // 数字颜色鲜艳，并添加阴影提高可读性
+                int cnt = cell.getNeighborMines();
+                if (cnt > 0) {
                     g2.setFont(new Font("Arial", Font.BOLD, 20));
-                    Color textColor;
-                    switch (neighbor) {
-                        case 1: textColor = new Color(0x1E88E5); break;
-                        case 2: textColor = new Color(0x43A047); break;
-                        case 3: textColor = new Color(0xE53935); break;
-                        case 4: textColor = new Color(0x8E24AA); break;
-                        case 5: textColor = new Color(0xD81B60); break;
-                        case 6: textColor = new Color(0x00ACC1); break;
-                        case 7: textColor = Color.BLACK; break;
-                        default: textColor = new Color(0x5D4037);
-                    }
-                    // 文字阴影
-                    g2.setColor(new Color(0, 0, 0, 40));
-                    String text = String.valueOf(neighbor);
+                    g2.setColor(switch (cnt) {
+                        case 1 -> Color.BLUE;
+                        case 2 -> new Color(0x008000);
+                        case 3 -> Color.RED;
+                        default -> Color.BLACK;
+                    });
+                    String s = String.valueOf(cnt);
                     FontMetrics fm = g2.getFontMetrics();
-                    int textX = x + (cellSize - fm.stringWidth(text)) / 2;
-                    int textY = y + (cellSize + fm.getAscent()) / 2 - 2;
-                    g2.drawString(text, textX + 1, textY + 1);
-                    // 文字本体
-                    g2.setColor(textColor);
-                    g2.drawString(text, textX, textY);
+                    g2.drawString(s, x + (cellSize-fm.stringWidth(s))/2, y + (cellSize+fm.getAscent())/2 - 2);
                 }
             }
         }
-    }
-
-    public void refresh() {
-        repaint();
-    }
-
-    public void updateBoardSize() {
-        setPreferredSize(new Dimension(
-                logic.getCols() * cellSize + padding * 2,
-                logic.getRows() * cellSize + padding * 2
-        ));
-        revalidate();
-        repaint();
     }
 }

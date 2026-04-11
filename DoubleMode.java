@@ -28,8 +28,8 @@ public class DoubleMode implements GameModeController {
         initPlayers();
         cursorRow = logic.getRows() / 2;
         cursorCol = logic.getCols() / 2;
-        window.setCursorPosition(cursorRow, cursorCol);
-        window.updateUI();   // 初始刷新
+        window.setCursor(cursorRow, cursorCol);
+        updateUI();
     }
 
     private void initPlayers() {
@@ -44,7 +44,7 @@ public class DoubleMode implements GameModeController {
         if (!roundActive || gameEnded) return;
         cursorRow = row;
         cursorCol = col;
-        window.setCursorPosition(row, col);
+        window.setCursor(row, col);
         revealCurrentCell();
     }
 
@@ -55,7 +55,7 @@ public class DoubleMode implements GameModeController {
         if (cell.isRevealed()) return;
         cell.setFlagged(!cell.isFlagged());
         audio.playFlag();
-        window.updateUI();   // 刷新旗子
+        window.updateUI();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class DoubleMode implements GameModeController {
             if (nr >= 0 && nr < logic.getRows() && nc >= 0 && nc < logic.getCols()) {
                 cursorRow = nr;
                 cursorCol = nc;
-                window.setCursorPosition(cursorRow, cursorCol);
+                window.setCursor(cursorRow, cursorCol);
             }
             e.consume();
         } else if (isAction) {
@@ -111,8 +111,6 @@ public class DoubleMode implements GameModeController {
             currentPlayer.addRoundScore(-5);
             if (currentPlayer.getRoundScore() < 0) currentPlayer.setRoundScore(0);
 
-            window.updateUI();   // 立即显示踩雷结果
-
             if (currentPlayer.getHitCount() >= GameConfig.MAX_HITS_BEFORE_END) {
                 window.setMessage(String.format("💥 %s 第%d次踩雷！回合结束，得%d分",
                         currentPlayer.getColorName(), currentPlayer.getHitCount(), currentPlayer.getRoundScore()));
@@ -123,6 +121,7 @@ public class DoubleMode implements GameModeController {
                         GameConfig.MAX_HITS_BEFORE_END - currentPlayer.getHitCount(),
                         currentPlayer.getRoundScore()));
             }
+            window.updateUI();
             return;
         }
 
@@ -151,9 +150,6 @@ public class DoubleMode implements GameModeController {
                     currentPlayer.getColorName(), gain, currentPlayer.getRoundScore()));
         }
 
-        window.updateUI();   // 刷新棋盘显示新翻开的格子
-
-        // 检查是否所有安全格已翻开
         boolean allSafeRevealed = true;
         outer:
         for (int r = 0; r < logic.getRows(); r++) {
@@ -171,6 +167,8 @@ public class DoubleMode implements GameModeController {
                     currentPlayer.getColorName(), currentPlayer.getRoundScore()));
             endRound();
         }
+
+        window.updateUI();
     }
 
     private void endRound() {
@@ -185,7 +183,7 @@ public class DoubleMode implements GameModeController {
             window.setMessage(String.format("🏆 游戏结束！%s 获胜！ 红:%d  蓝:%d",
                     winner, player1.getTotalScore(), player2.getTotalScore()));
             window.clearCursor();
-            window.updateUI();   // 刷新最终界面
+            updateUI();
             return;
         }
 
@@ -199,11 +197,11 @@ public class DoubleMode implements GameModeController {
         logic.generateMines();
         cursorRow = logic.getRows() / 2;
         cursorCol = logic.getCols() / 2;
-        window.setCursorPosition(cursorRow, cursorCol);
+        window.setCursor(cursorRow, cursorCol);
 
         window.setMessage(String.format("🔄 换人！轮到 %s 第%d回合！",
                 currentPlayer.getColorName(), currentPlayer.getRoundsPlayed() + 1));
-        window.updateUI();   // 刷新新回合棋盘
+        window.updateUI();
     }
 
     @Override
@@ -234,8 +232,12 @@ public class DoubleMode implements GameModeController {
         logic.generateMines();
         cursorRow = logic.getRows() / 2;
         cursorCol = logic.getCols() / 2;
-        window.setCursorPosition(cursorRow, cursorCol);
-        window.updateUI();   // 刷新
+        window.setCursor(cursorRow, cursorCol);
+        updateUI();
         window.setMessage("🔄 游戏重置！🔴 红方先！");
+    }
+
+    private void updateUI() {
+        window.updateUI();
     }
 }
