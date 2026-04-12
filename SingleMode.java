@@ -17,52 +17,38 @@ public class SingleMode implements GameModeController {
         this.audio = audio;
     }
 
-    @Override
     public void handleLeftClick(int row, int col) {
-        if (logic.isGameOver()) return;
         Cell cell = logic.getCell(row, col);
-        if (cell.isFlagged()) return;
-
+        if (cell == null) return;
+        if (cell.isFlagged() || logic.isGameOver()) return;
         if (cell.isMine()) {
             audio.playExplode();
             logic.revealAllMines();
-            window.updateUI();
-            return;
+        } else {
+            int cnt = logic.revealCell(row, col);
+            if (cnt > 0) audio.playClick();
+            if (logic.isGameWin()) {
+                audio.playWin();
+                logic.flagAllMines();
+            }
         }
-
-        int revealed = logic.revealCell(row, col);
-        if (revealed > 0) {
-            if (revealed >= 5) audio.playCombo(revealed);
-            else audio.playClick();
-        }
-
-        if (logic.isGameWin()) {
-            audio.playWin();
-            logic.flagAllMines();
-        }
-
-        window.updateUI();  // 确保每次点击后界面刷新
-    }
-
-    @Override
-    public void handleRightClick(int row, int col) {
-        if (logic.isGameOver()) return;
-        Cell cell = logic.getCell(row, col);
-        if (cell.isRevealed()) return;
-        cell.setFlagged(!cell.isFlagged());
-        audio.playFlag();
         window.updateUI();
     }
 
-    @Override
-    public void handleKeyPress(KeyEvent e) {}
-
-    @Override
-    public void updateUIComponents(GameWindow window) {
-        window.clearCursor();
-        window.setTip("💡 左键翻开，右键插旗");
+    public void handleRightClick(int row, int col) {
+        Cell cell = logic.getCell(row, col);
+        if (cell == null) return;
+        if (!cell.isRevealed() && !logic.isGameOver()) {
+            cell.setFlagged(!cell.isFlagged());
+            audio.playFlag();
+            window.updateUI();
+        }
     }
 
-    @Override
+    public void handleKeyPress(KeyEvent e) {}
+    public void updateUIComponents(GameWindow w) {
+        w.clearCursor();
+        w.setTip("💡 左键翻开，右键插旗");
+    }
     public void reset() {}
 }

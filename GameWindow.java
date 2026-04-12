@@ -201,23 +201,35 @@ public class GameWindow extends JFrame {
         currentMode = mode;
         playersPanel.setVisible(mode == GameConfig.GameMode.DOUBLE);
         tipLabel.setVisible(mode == GameConfig.GameMode.DOUBLE);
+        // 重新创建逻辑
         logic = new GameLogic(currentDifficulty.rows, currentDifficulty.cols, currentDifficulty.mines);
         logic.generateMines();
         gamePanel.setLogic(logic);
-        modeController = (mode == GameConfig.GameMode.SINGLE) ? new SingleMode(logic, this, audio)
-                : new DoubleMode(logic, this, audio);
+        // 创建新模式控制器，传入新 logic
+        if (mode == GameConfig.GameMode.SINGLE) {
+            modeController = new SingleMode(logic, this, audio);
+        } else {
+            modeController = new DoubleMode(logic, this, audio);
+        }
         gamePanel.revalidate();
         pack();
         setLocationRelativeTo(null);
         updateUI();
+        requestFocusInWindow();
     }
 
     private void setDifficulty(GameConfig.Difficulty d) {
         currentDifficulty = d;
+        // 新建 logic
         logic = new GameLogic(d.rows, d.cols, d.mines);
         logic.generateMines();
         gamePanel.setLogic(logic);
-        if (modeController != null) modeController.reset();
+        // 更新当前模式控制器的 logic 引用（通过重新创建）
+        if (currentMode == GameConfig.GameMode.SINGLE) {
+            modeController = new SingleMode(logic, this, audio);
+        } else {
+            modeController = new DoubleMode(logic, this, audio);
+        }
         statusPanel.setBackground(switch (d) {
             case EASY -> new Color(0x2ECC71);
             case MEDIUM -> new Color(0x3498DB);
@@ -227,12 +239,17 @@ public class GameWindow extends JFrame {
         pack();
         setLocationRelativeTo(null);
         updateUI();
+        requestFocusInWindow();
     }
 
     private void resetGame() {
         logic.resetBoardState();
         logic.generateMines();
         if (modeController != null) modeController.reset();
+        gamePanel.repaint();
         updateUI();
     }
+
+    // 暴露给模式控制器用于获取当前 logic
+    public GameLogic getLogic() { return logic; }
 }

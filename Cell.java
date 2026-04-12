@@ -7,9 +7,7 @@ public class Cell {
     private boolean exploded;
     private int neighborMines;
 
-    public Cell() {
-        reset();
-    }
+    public Cell() { reset(); }
 
     public void reset() {
         mine = false;

@@ -22,13 +22,12 @@ public class GamePanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                // 每次点击都使用当前最新的 logic
                 GameLogic currentLogic = GamePanel.this.logic;
                 if (currentLogic == null) return;
                 int row = (e.getY() - padding) / cellSize;
                 int col = (e.getX() - padding) / cellSize;
                 if (row < 0 || row >= currentLogic.getRows() || col < 0 || col >= currentLogic.getCols()) {
-                    return; // 严格边界检查
+                    return;
                 }
                 if (SwingUtilities.isLeftMouseButton(e) && onLeftClick != null) {
                     onLeftClick.accept(row, col);
@@ -43,9 +42,9 @@ public class GamePanel extends JPanel {
 
     public void setLogic(GameLogic logic) {
         this.logic = logic;
-        updateSize();      // 重新计算首选尺寸
-        revalidate();      // 通知布局管理器
-        repaint();         // 立即重绘
+        updateSize();
+        revalidate();
+        repaint();
     }
 
     public void setOnLeftClick(BiConsumer<Integer, Integer> h) { onLeftClick = h; }
@@ -76,7 +75,8 @@ public class GamePanel extends JPanel {
             for (int c = 0; c < logic.getCols(); c++) {
                 int x = padding + c * cellSize;
                 int y = padding + r * cellSize;
-                drawCell(g2, logic.getCell(r, c), x, y);
+                Cell cell = logic.getCell(r, c);
+                if (cell != null) drawCell(g2, cell, x, y);
             }
         }
 
